@@ -27,11 +27,10 @@ export default function MessageList({ messages }) {
       sx={{
         ...styles,
         "&::-webkit-scrollbar": {
-          width: "1em",
+          width: "0.4em",
         },
         "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "blue",
-          outline: "1px solid slategrey",
+          backgroundColor: "#8ACDD7",
         },
       }}
     >

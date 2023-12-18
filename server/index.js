@@ -47,7 +47,6 @@ io.on("connection", (socket) => {
     socket.emit("connected");
   });
 
-  
   socket.on("join chat", (roomId) => {
     socket.join(roomId);
     console.log("join room " + roomId);
@@ -58,11 +57,19 @@ io.on("connection", (socket) => {
 
     if (!chat.users) return console.log("chat.users not defined");
 
+    if (chat.groupAdmin !== newMessageRecieved.sender._id) {
+      socket.in(chat.groupAdmin).emit("message recieved", newMessageRecieved);
+    }
     chat.users.forEach((user) => {
+      console.log(user._id);
       if (user._id == newMessageRecieved.sender._id) return;
-
       socket.in(user._id).emit("message recieved", newMessageRecieved);
     });
+  });
+
+  socket.off("setup", () => {
+    console.log("user disconnected");
+    socket.leave(userData._id);
   });
 
   socket.on("disconnect", () => {
