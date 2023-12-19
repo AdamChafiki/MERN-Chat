@@ -80,8 +80,14 @@ const chatSlice = createSlice({
       })
       .addCase(accessChat.fulfilled, (state, action) => {
         state.loading = "succeeded";
-        state.chats.unshift(action.payload);
+        function isEqual(obj1, obj2) {
+          return JSON.stringify(obj1) === JSON.stringify(obj2);
+        }
+        if (!state.chats.some((chat) => isEqual(chat, action.payload))) {
+          state.chats.push(action.payload);
+        } 
       })
+
       .addCase(accessChat.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.error.message;

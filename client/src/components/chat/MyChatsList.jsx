@@ -38,7 +38,7 @@ const MyChatsList = ({ chat }) => {
         }}
         onClick={() => handleChatClick(chat)}
       >
-        <Avatar src={getSender(chat.users).username} size="xs" mr={2} />
+        <Avatar src={getSender(chat.users).avatar} size="xs" mr={2} />
         {!chat.isGroupChat ? (
           <Text>{getSender(chat.users).username}</Text>
         ) : (
