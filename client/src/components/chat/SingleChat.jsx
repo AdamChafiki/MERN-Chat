@@ -8,7 +8,7 @@ import {
   Spinner,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   allMessages,
@@ -18,6 +18,7 @@ import {
 import MessageList from "../message/MessageList";
 const ENDPOINT = "http://localhost:8000";
 import io from "socket.io-client";
+import { addNotif } from "../../redux/slices/notifSlice";
 var socket, selectedChatCompare;
 
 const SingleChat = ({ chatId }) => {
@@ -25,6 +26,7 @@ const SingleChat = ({ chatId }) => {
   const { loading, messages } = useSelector((state) => state.message);
   const { user } = useSelector((state) => state.auth);
   const { selectedChat } = useSelector((state) => state.chat);
+  const { notification } = useSelector((state) => state.notif);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -49,12 +51,14 @@ const SingleChat = ({ chatId }) => {
         selectedChatCompare._id !== newMessageReceived.chat._id
       ) {
         // Do nothing if the chat doesn't match the selected chat
+        if (!notification.includes(newMessageReceived)) {
+          dispatch(addNotif(newMessageReceived));
+        }
       } else {
-        console.log(newMessageReceived);
         dispatch(receiveMessage(newMessageReceived));
       }
     });
-  },[]);
+  }, []);
 
   const sendMessageTo = () => {
     const data = {
