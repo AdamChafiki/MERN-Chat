@@ -1,13 +1,11 @@
-import { Box, Center, Heading, Text } from "@chakra-ui/react";
-import {  useSelector } from "react-redux";
+import { Box, Center, Heading, Text, Tooltip } from "@chakra-ui/react";
+import { useSelector } from "react-redux";
 import { ViewIcon } from "@chakra-ui/icons";
 import SingleChat from "./SingleChat";
 
 const ChatBox = () => {
   const { selectedChat } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.auth);
-
- 
 
   const getSender = (users) => {
     const currentUserId = user._id;
@@ -41,7 +39,15 @@ const ChatBox = () => {
                 color="black"
                 rounded={"lg"}
               >
-                <ViewIcon />
+                {!selectedChat.isGroupChat ? (
+                  <Tooltip label={getSender(selectedChat.users)}>
+                    <ViewIcon />
+                  </Tooltip>
+                ) : (
+                  <Tooltip label={selectedChat.chatName}>
+                    <ViewIcon />
+                  </Tooltip>
+                )}
               </Center>
             </Box>
             <SingleChat chatId={selectedChat?._id} />

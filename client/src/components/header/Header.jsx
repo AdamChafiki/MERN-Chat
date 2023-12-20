@@ -8,6 +8,7 @@ import {
   Avatar,
   Text,
   HStack,
+  Box,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { SearchIcon, BellIcon } from "@chakra-ui/icons";
@@ -38,7 +39,12 @@ const Header = () => {
         </Button>
         <div className="flex items-center">
           <Menu>
-            <MenuButton as={BellIcon} cursor="pointer" mr={2} h={6} w={6} />
+            <Box position={"relative"} mr={2}>
+              <MenuButton as={BellIcon} cursor="pointer" h={6} w={6} />
+              <span className="absolute bg-red-600 w-3 h-3 text-center text-white p-2 top-0 right-0 rounded-full flex items-center justify-center">
+                <Text fontSize="xs">{notification.length}</Text>
+              </span>
+            </Box>
 
             <MenuList p={2}>
               {notification.length > 0 ? (

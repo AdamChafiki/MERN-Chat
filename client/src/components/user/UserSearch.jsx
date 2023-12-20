@@ -1,12 +1,27 @@
+import { Avatar, ListItem, Text, useToast } from "@chakra-ui/react";
 import PropTypes from "prop-types";
-import { Avatar, ListItem, Text } from "@chakra-ui/react";
 
 const UserSearch = ({ user, setUsersSearch, usersSearch }) => {
+  const toast = useToast();
 
-    
-  const handleTag = (userInfo) => {
-    setUsersSearch((prev) => [...prev, userInfo]);
+  const isEqual = (obj1, obj2) => {
+    return JSON.stringify(obj1) === JSON.stringify(obj2);
   };
+
+  const handleTag = (userInfo) => {
+    if (!usersSearch.some((user) => isEqual(user, userInfo))) {
+      setUsersSearch((prev) => [...prev, userInfo]);
+    } else {
+      toast({
+        title: "Name Already Exists",
+        description: "This name already exists in the tag.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <ListItem
       onClick={() => handleTag({ userId: user?._id, name: user?.username })}

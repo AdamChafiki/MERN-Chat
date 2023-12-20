@@ -15,6 +15,8 @@ import {
   TagCloseButton,
   TagLabel,
   Text,
+  useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,15 +24,30 @@ import { searchUser } from "../../redux/slices/userSlice";
 import SkeletonLoader from "../loader/SkeletonLoader";
 import UserSearch from "../user/UserSearch";
 import { createGroupChat } from "../../redux/slices/chatSlice";
+import Loader from "../loader/Loader";
 
 export default function ModalGroupChat({ isOpen, onClose }) {
   const [usersSearch, setUsersSearch] = useState([]);
   const nameInp = useRef();
   const dispatch = useDispatch();
   const { loading, users } = useSelector((state) => state.user);
+  const { loading: lg } = useSelector((state) => state.chat);
+
+  const toast = useToast();
 
   const handleCreateGroup = () => {
     const userIds = [];
+
+    if (usersSearch.length <= 1) {
+      toast({
+        title: "Group Chat Requires at Least Two Users",
+        description: "Please add at least two users for a group chat.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
     usersSearch.map((user) => userIds.push(user.userId));
     const dataJson = JSON.stringify(userIds);
     const data = {
@@ -68,6 +85,8 @@ export default function ModalGroupChat({ isOpen, onClose }) {
                     variant="solid"
                     colorScheme="blue"
                   >
+                    {lg === "loading" && <Spinner size="xs" mr={2} />}
+
                     <TagLabel>{u.name}</TagLabel>
                     <TagCloseButton onClick={() => handleDeleteTag(u.userId)} />
                   </Tag>
