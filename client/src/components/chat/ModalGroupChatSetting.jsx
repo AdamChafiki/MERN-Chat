@@ -1,5 +1,6 @@
 import {
   Button,
+  HStack,
   Input,
   List,
   Modal,
@@ -10,52 +11,32 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  HStack,
   Tag,
   TagCloseButton,
   TagLabel,
   Text,
   useToast,
-  Spinner,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { searchUser } from "../../redux/slices/userSlice";
+import {
+  addUserToGroup,
+  fetchChats,
+  renameGroupChat,
+} from "../../redux/slices/chatSlice";
 import SkeletonLoader from "../loader/SkeletonLoader";
 import UserSearch from "../user/UserSearch";
-import { createGroupChat } from "../../redux/slices/chatSlice";
-import Loader from "../loader/Loader";
+import { searchUser } from "../../redux/slices/userSlice";
 
-export default function ModalGroupChat({ isOpen, onClose }) {
-  const [usersSearch, setUsersSearch] = useState([]);
+const ModalGroupChatSetting = ({ isOpen, onClose, chatId }) => {
   const nameInp = useRef();
   const dispatch = useDispatch();
-  const { loading, users } = useSelector((state) => state.user);
-  const { loading: lg } = useSelector((state) => state.chat);
+  const { loading } = useSelector((state) => state.chat);
+  const { loading: ls, users } = useSelector((state) => state.user);
+
+  const [usersSearch, setUsersSearch] = useState([]);
 
   const toast = useToast();
-
-  const handleCreateGroup = () => {
-    const userIds = [];
-
-    if (usersSearch.length <= 1 || nameInp.current.value == "") {
-      toast({
-        title: "Group Chat Requires at Least Two Users && name is required",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-    usersSearch.map((user) => userIds.push(user.userId));
-    const dataJson = JSON.stringify(userIds);
-    const data = {
-      name: nameInp.current.value,
-      users: dataJson,
-    };
-    dispatch(createGroupChat({ data, onClose }));
-  };
-
   const handleDeleteTag = (userId) => {
     setUsersSearch(usersSearch.filter((user) => user.userId !== userId));
   };
@@ -66,11 +47,28 @@ export default function ModalGroupChat({ isOpen, onClose }) {
     }
     dispatch(searchUser(key));
   };
+  const handleRenameChatGroup = () => {
+    if (usersSearch.length == 1) {
+      const userData = {
+        chatId,
+        userId: usersSearch[0].userId,
+      };
+      return dispatch(addUserToGroup({ userData, toast }));
+    }
+    if (nameInp !== "") {
+      const data = {
+        chatId,
+        chatName: nameInp.current.value,
+      };
+
+      return dispatch(renameGroupChat({ data, onClose, fetchChats }));
+    }
+  };
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Create group chat</ModalHeader>
+        <ModalHeader>Update group</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <HStack spacing={3} my={3}>
@@ -84,8 +82,6 @@ export default function ModalGroupChat({ isOpen, onClose }) {
                     variant="solid"
                     colorScheme="blue"
                   >
-                    {lg === "loading" && <Spinner size="xs" mr={2} />}
-
                     <TagLabel>{u.name}</TagLabel>
                     <TagCloseButton onClick={() => handleDeleteTag(u.userId)} />
                   </Tag>
@@ -93,26 +89,25 @@ export default function ModalGroupChat({ isOpen, onClose }) {
               </>
             ) : (
               <Text as="b" my={3} color={"blue"}>
-                At least 2 users
+                At least 1 users
               </Text>
             )}
           </HStack>
-
           <Stack spacing={3} px={3}>
             <Input ref={nameInp} variant="outline" placeholder="Name" />
             <Input
-              onChange={(e) => handleSearch(e.target.value)}
               variant="outline"
-              placeholder="Add users"
+              placeholder="Add user"
+              onChange={(e) => handleSearch(e.target.value)}
             />
           </Stack>
-          {loading === "loading" ? <SkeletonLoader /> : <></>}
-          {loading === "failed" ? (
+          {ls === "loading" ? <SkeletonLoader /> : <></>}
+          {ls === "failed" ? (
             <p className="py-2 font-semibold">User not found !</p>
           ) : (
             <></>
           )}
-          {loading === "succeeded" ? (
+          {ls === "succeeded" ? (
             <>
               <List spacing={6} mt={5}>
                 {users.map((user) => (
@@ -129,14 +124,15 @@ export default function ModalGroupChat({ isOpen, onClose }) {
             <></>
           )}
         </ModalBody>
+
         <ModalFooter>
           <Button
             isLoading={loading === "loading"}
-            onClick={handleCreateGroup}
             colorScheme="green"
             mr={3}
+            onClick={handleRenameChatGroup}
           >
-            Create
+            Save
           </Button>
           <Button colorScheme="red" mr={3} onClick={onClose}>
             Close
@@ -145,4 +141,6 @@ export default function ModalGroupChat({ isOpen, onClose }) {
       </ModalContent>
     </Modal>
   );
-}
+};
+
+export default ModalGroupChatSetting;

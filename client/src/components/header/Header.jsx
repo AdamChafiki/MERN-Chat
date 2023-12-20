@@ -16,14 +16,13 @@ import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/slices/authSlice";
 import SideDrawer from "../sideDrawer/SideDrawer";
-import { allMessages } from "../../redux/slices/messageSlice";
+import { curretChat } from "../../redux/slices/chatSlice";
 const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
   const nav = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-
   const { notification } = useSelector((state) => state.notif);
   const handleLogout = (event) => {
     event.preventDefault();
@@ -50,10 +49,10 @@ const Header = () => {
               {notification.length > 0 ? (
                 <>
                   {notification.map((message) => (
-                    <MenuItem key={message.id}>
+                    <MenuItem key={message._id}>
                       <HStack
                         onClick={() => {
-                          dispatch(allMessages(message.chat._id));
+                          dispatch(curretChat(message.chat._id));
                         }}
                         spacing={3}
                       >

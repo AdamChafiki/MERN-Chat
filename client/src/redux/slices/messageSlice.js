@@ -54,7 +54,7 @@ const messageSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(sendMessage.pending, (state) => {
-        state.loading = "loading";
+        state.loading = "pending";
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.loading = "succeeded";

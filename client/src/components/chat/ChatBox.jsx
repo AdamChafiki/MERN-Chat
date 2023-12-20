@@ -1,11 +1,21 @@
-import { Box, Center, Heading, Text, Tooltip } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Heading,
+  Text,
+  Tooltip,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useSelector } from "react-redux";
-import { ViewIcon } from "@chakra-ui/icons";
+import { ViewIcon, SettingsIcon } from "@chakra-ui/icons";
 import SingleChat from "./SingleChat";
+import ModalGroupChatSetting from "./ModalGroupChatSetting";
 
 const ChatBox = () => {
   const { selectedChat } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.auth);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const getSender = (users) => {
     const currentUserId = user._id;
@@ -31,24 +41,33 @@ const ChatBox = () => {
                   <>{selectedChat.chatName}</>
                 )}
               </Text>
-              {/* to do info */}
-              <Center
-                w="30px"
-                h="30px"
-                bg="gray.300"
-                color="black"
-                rounded={"lg"}
-              >
-                {!selectedChat.isGroupChat ? (
-                  <Tooltip label={getSender(selectedChat.users)}>
-                    <ViewIcon />
-                  </Tooltip>
-                ) : (
+              {!selectedChat.isGroupChat ? (
+                <Tooltip label={getSender(selectedChat.users)}>
+                  <ViewIcon />
+                </Tooltip>
+              ) : (
+                <Box display={"flex"} justifyItems={"center"}>
+                  <ModalGroupChatSetting
+                    isOpen={isOpen}
+                    onClose={onClose}
+                    chatId={selectedChat._id}
+                  />
+
+                  {selectedChat.groupAdmin._id === user._id && (
+                    <Button
+                      bg="none"
+                      size="xs"
+                      onClick={onOpen}
+                      fontSize="md" // Set the desired font size here
+                    >
+                      <SettingsIcon />
+                    </Button>
+                  )}
                   <Tooltip label={selectedChat.chatName}>
-                    <ViewIcon />
+                    <ViewIcon boxSize={5} />
                   </Tooltip>
-                )}
-              </Center>
+                </Box>
+              )}
             </Box>
             <SingleChat chatId={selectedChat?._id} />
           </>
