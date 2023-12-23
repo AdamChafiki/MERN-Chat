@@ -86,7 +86,6 @@ export const renameGroupChat = createAsyncThunk(
   }
 );
 
-
 export const addUserToGroup = createAsyncThunk(
   "chat/addUserToGroup",
   async ({ userData, toast }, { getState }) => {
@@ -104,12 +103,17 @@ export const addUserToGroup = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
+      toast({
+        title: "User already exits!",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
       console.error("Error:", error.message);
       throw error.response.data.message;
     }
   }
 );
-
 
 const chatSlice = createSlice({
   name: "chat",
@@ -170,21 +174,9 @@ const chatSlice = createSlice({
       .addCase(renameGroupChat.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.error.message;
-      })
-      .addCase(addUserToGroup.pending, (state) => {
-        state.loading = "loading";
-      })
-      .addCase(addUserToGroup.fulfilled, (state, action) => {
-        state.loading = "succeeded";
-        state.selectedChat.chatName = action.payload.chatName;
-      })
-      .addCase(addUserToGroup.rejected, (state, action) => {
-        state.loading = "failed";
-        state.error = action.error.message;
       });
   },
 });
-
 
 const chatReducer = chatSlice.reducer;
 const chatActions = {

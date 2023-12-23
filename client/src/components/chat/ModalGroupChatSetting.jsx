@@ -55,7 +55,7 @@ const ModalGroupChatSetting = ({ isOpen, onClose, chatId }) => {
       };
       return dispatch(addUserToGroup({ userData, toast }));
     }
-    if (nameInp !== "") {
+    if (nameInp.current.value !== "") {
       const data = {
         chatId,
         chatName: nameInp.current.value,

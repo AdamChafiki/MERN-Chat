@@ -65,7 +65,9 @@ const SingleChat = ({ chatId }) => {
       content: inpMessage.current.value,
       chatId,
     };
-    dispatch(sendMessage({ data, socket }));
+    if (!inpMessage.current.value == "") {
+      dispatch(sendMessage({ data, socket }));
+    }
     inpMessage.current.value = "";
   };
 

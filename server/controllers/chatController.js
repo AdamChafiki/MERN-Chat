@@ -169,6 +169,10 @@ const addToGroup = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Not authorized" });
   }
 
+  const user = await Chat.findOne({ users: { $in: [userId] } });
+  if (user) {
+    return res.status(400).json({ message: "User already exits" });
+  }
   const updateGroup = await Chat.findByIdAndUpdate(
     chatId,
     {

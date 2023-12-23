@@ -1,0 +1,6 @@
+1  - empty message input ! done
+2  - chat setting system  !   done
+3 - add features to leave group !
+4 -  fix notification problem !
+5 - add security
+6 - deploy
