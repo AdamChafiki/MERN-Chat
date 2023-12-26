@@ -1,3 +1,3 @@
-const BASEURL = "http://localhost:8000/api";
+const BASEURL = "https://api-chat-de0p.onrender.com/api";
 
 export default BASEURL;
